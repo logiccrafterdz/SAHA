@@ -540,3 +540,9 @@ Check health and active topics:
 curl http://localhost:8090/health
 curl http://localhost:8090/topics
 ```
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
