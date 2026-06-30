@@ -78,9 +78,10 @@ curl http://localhost:8090/health   # saha-bus (Go)
 Run the full agent loop for a task.
 
 ```json
+// Note: Omit `provider_id` to enable dynamic Cost Routing, or specify any configured model.
 {
   "task_id": "optional-uuid",
-  "provider_id": "claude_3_5_sonnet",  // Omit for dynamic routing, or any configured Claude 3.x model
+  "provider_id": "claude_3_5_sonnet",
   "message": "Write a Python function that sorts a list",
   "system_prompt": "You are a senior Python engineer.",
   "scenario_id": "CODE_GEN_PY",
@@ -284,8 +285,8 @@ SAHA/
 │   ├── vendor/                 # Vendor Abstraction Layer
 │   │   ├── base.py             # BaseAdapter ABC
 │   │   ├── error_mapper.py     # Error taxonomy mapping
-│   │   ├── adapters/claude.py  # Claude (Anthropic) adapter
-│   │   └── profiles/claude.json
+│   │   ├── adapters/           # Claude, Gemini, OpenAI adapters
+│   │   └── profiles/           # Capability and tier definitions
 │   ├── execution/              # Agent Execution Harness
 │   │   ├── agent_loop.py       # Multi-turn loop (§3.3)
 │   │   ├── agent_state.py      # DB-backed state manager
@@ -294,13 +295,19 @@ SAHA/
 │   │   ├── normalizer.py       # Normalization pipeline (§1.4)
 │   │   ├── grader.py           # Deterministic grader + LLM stub
 │   │   └── storage.py          # Hot/Warm/Cold trace storage
+│   ├── routing/                # Cost Router & Escalations
+│   ├── observability/          # Metrics Aggregator & Anomalies
+│   ├── privacy/                # Data Residency & PII Redaction
+│   ├── hitl/                   # Human-in-the-loop Controls
 │   ├── event_bus/              # Redis bus client (Python)
 │   └── db/                     # asyncpg pool + migrations
 │
 ├── services/                   # FastAPI entry points
-│   ├── execution_api/main.py   # :8001
-│   ├── vendor_api/main.py      # :8002
-│   └── eval_api/main.py        # :8003
+│   ├── execution_api/main.py       # :8001
+│   ├── vendor_api/main.py          # :8002
+│   ├── eval_api/main.py            # :8003
+│   ├── observability_api/main.py   # :8004
+│   └── routing_api/main.py         # :8005
 │
 ├── tests/
 │   ├── unit/                   # No external deps required
@@ -361,7 +368,8 @@ pipeline is working after standing up the stack with `docker compose up`.
 curl -s -X POST http://localhost:8001/tasks/run \
   -H "Content-Type: application/json" \
   -d '{
-    "provider_id":   "claude_3_5_sonnet",  // Omit for dynamic routing, or any configured model
+    // Note: Omit provider_id to enable dynamic Cost Routing
+    "provider_id":   "claude_3_5_sonnet",
     "message":       "Fix the divide-by-zero bug in calculate_average(nums). Return only the corrected function.",
     "system_prompt": "You are a senior Python engineer. Respond with corrected Python code only.",
     "scenario_id":   "SCENARIO_PY_FIX",
