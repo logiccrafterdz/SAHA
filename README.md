@@ -77,8 +77,9 @@ curl http://localhost:8090/health   # saha-bus (Go)
 #### `POST /tasks/run`
 Run the full agent loop for a task.
 
+> **Note:** Omit `provider_id` to enable dynamic Cost Routing, or specify any configured model.
+
 ```json
-// Note: Omit `provider_id` to enable dynamic Cost Routing, or specify any configured model.
 {
   "task_id": "optional-uuid",
   "provider_id": "claude_3_5_sonnet",
@@ -193,7 +194,7 @@ Lists all active SAHA topics.
 
 ## Architecture
 
-```
+```text
 ┌──────────────────────────────────────────────────────────┐
 │                     SAHA Architecture                     │
 │                                                          │
@@ -273,7 +274,7 @@ go build -o saha-bus ./main.go
 
 ## Project Structure
 
-```
+```text
 SAHA/
 ├── bus/                        # Go Event Bus
 │   ├── main.go                 # Entry point (HTTP :8090 + Redis)
@@ -364,11 +365,12 @@ pipeline is working after standing up the stack with `docker compose up`.
 
 ### 1 — Send the Task
 
+> **Note:** Omit `provider_id` to enable dynamic Cost Routing.
+
 ```bash
 curl -s -X POST http://localhost:8001/tasks/run \
   -H "Content-Type: application/json" \
   -d '{
-    // Note: Omit provider_id to enable dynamic Cost Routing
     "provider_id":   "claude_3_5_sonnet",
     "message":       "Fix the divide-by-zero bug in calculate_average(nums). Return only the corrected function.",
     "system_prompt": "You are a senior Python engineer. Respond with corrected Python code only.",
@@ -412,7 +414,7 @@ WHERE  status = 'COMPLETED'
 ORDER  BY updated_at DESC
 LIMIT  1;
 ```
-```
+```text
  agent_state_id | task_id | provider_id        | status    | budget_used | current_step
 ----------------+---------+--------------------+-----------+-------------+-------------
  3f8a1b2c-...   | 9d4e... | claude_3_5_sonnet  | COMPLETED |   0.004200  |     0
@@ -427,7 +429,7 @@ FROM   routing_decisions
 ORDER  BY created_at DESC
 LIMIT  1;
 ```
-```
+```text
  decision_id | chosen_provider_id | mode          | reason
  a1b2c3d4-.. | claude_3_5_sonnet  | conservative  | {"quality_score": 95.0, "safety_score": 100, "rank": 1}
 ```
@@ -505,7 +507,7 @@ FROM   eval_traces
 WHERE  scenario_id = 'SCENARIO_PY_FIX'
 ORDER  BY created_at DESC;
 ```
-```
+```text
  trace_id     | scenario_id      | final_verdict | quality_score | safety_score | storage_tier
  7a3b9c1d-... | SCENARIO_PY_FIX  | SUCCESS       |           100 |          100 | HOT
 ```
@@ -528,7 +530,7 @@ metrics are preserved for routing and trend analysis.
 
 While running the scenario, the Go event bus at `:8090` logs:
 
-```
+```jsonl
 {"level":"INFO","topic":"SAHA/eval_inputs",      "keys":["eval_id","scenario_id","provider_info",...]}
 {"level":"INFO","topic":"SAHA/eval_results",     "keys":["eval_id","final_verdict","quality_score",...]}
 ```
