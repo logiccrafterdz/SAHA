@@ -1,0 +1,30 @@
+{
+  "provider_id": "gemini_1_5_pro",
+  "capabilities": {
+    "max_context_tokens": 1000000,
+    "supports_tools": true,
+    "supports_images": true,
+    "supports_parallel_agents": false,
+    "max_parallel_agents": 1,
+    "supports_arena_mode": false,
+    "supports_context_circulation": false,
+    "supports_3_agent_harness": false,
+    "native_multi_turn": true,
+    "streaming": true,
+    "supports_streaming_cost_tracking": false,
+    "supports_budget_interrupt": false
+  },
+  "pricing": {
+    "input_per_1m": 1.25,
+    "output_per_1m": 5.00
+  },
+  "known_strengths": ["long_context", "multimodal", "document_analysis", "cost_efficiency"],
+  "known_weaknesses": ["complex_reasoning", "code_precision"],
+  "policies": {
+    "can_route_to_competitors": true,
+    "can_store_outputs_for_training": false,
+    "can_use_in_eval_comparison": true,
+    "data_residency_requirements": ["us"],
+    "prohibited_use_cases": []
+  }
+}

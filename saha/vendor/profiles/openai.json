@@ -1,0 +1,30 @@
+{
+  "provider_id": "gpt_4o",
+  "capabilities": {
+    "max_context_tokens": 128000,
+    "supports_tools": true,
+    "supports_images": true,
+    "supports_parallel_agents": false,
+    "max_parallel_agents": 1,
+    "supports_arena_mode": false,
+    "supports_context_circulation": false,
+    "supports_3_agent_harness": false,
+    "native_multi_turn": true,
+    "streaming": true,
+    "supports_streaming_cost_tracking": false,
+    "supports_budget_interrupt": false
+  },
+  "pricing": {
+    "input_per_1m": 2.50,
+    "output_per_1m": 10.00
+  },
+  "known_strengths": ["reasoning", "code", "broad_knowledge", "tool_use", "instruction_following"],
+  "known_weaknesses": ["long_context_degradation"],
+  "policies": {
+    "can_route_to_competitors": true,
+    "can_store_outputs_for_training": false,
+    "can_use_in_eval_comparison": true,
+    "data_residency_requirements": ["us", "eu"],
+    "prohibited_use_cases": []
+  }
+}
