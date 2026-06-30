@@ -131,7 +131,8 @@ Send a UnifiedAgentRequest directly to a provider (bypasses agent loop).
 ### Eval API `:8003`
 
 #### `POST /eval`
-Synchronously grade an EvalInput payload.
+Synchronously grade an EvalInput payload. 
+> **Note:** This is an isolated endpoint for testing and manual evaluation. In production, the Execution Harness publishes asynchronous events to `SAHA/eval_inputs` on the Event Bus instead of making blocking HTTP calls.
 
 ```json
 {
@@ -438,7 +439,8 @@ LIMIT  1;
 
 ### 3 — Eval Trace (via Eval API)
 
-The Eval Harness processes the result asynchronously via the event bus.
+> **Note:** In the actual agent loop, evaluation happens asynchronously via the Event Bus (`SAHA/eval_inputs`). The following `curl` command demonstrates how to use the synchronous `POST /eval` endpoint for isolated manual testing.
+
 Check the result directly:
 
 ```bash
