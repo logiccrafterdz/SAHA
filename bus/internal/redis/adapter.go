@@ -1,6 +1,9 @@
 // SAHA – Redis Adapter for the Go Event Bus
 // Implements bus.Adapter using Redis pub/sub.
-// Replace this file with kafka_adapter.go when scaling to Phase 2.
+// 
+// Note on Persistence & Delivery: Standard Redis Pub/Sub is fire-and-forget (at-most-once delivery)
+// and does not persist history in channels. For at-least-once delivery with message retention,
+// replace this with a Redis Streams adapter (using EXPIRE/XTRIM) or a Kafka adapter.
 package redis
 
 import (

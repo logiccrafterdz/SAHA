@@ -67,6 +67,19 @@ class AgentStateManager:
         data: dict[str, Any] = json.loads(row["state"])
         return AgentState(**data)
 
+    async def get_by_task_id(self, task_id: str) -> AgentState | None:
+        """Fetch the most recent agent state for a given task_id (Idempotency check)."""
+        pool = await get_pool()
+        async with pool.acquire() as conn:
+            row = await conn.fetchrow(
+                "SELECT state FROM agent_states WHERE task_id = $1 ORDER BY created_at DESC LIMIT 1",
+                task_id,
+            )
+        if not row:
+            return None
+        data: dict[str, Any] = json.loads(row["state"])
+        return AgentState(**data)
+
     async def update(self, state: AgentState) -> None:
         pool = await get_pool()
         async with pool.acquire() as conn:

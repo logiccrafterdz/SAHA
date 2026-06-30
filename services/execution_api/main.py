@@ -111,6 +111,19 @@ async def run_task(body: RunTaskRequest) -> RunTaskResponse:
     if not _loop:
         raise HTTPException(status_code=503, detail="Execution harness not initialised")
 
+    # Idempotency check: if task_id already exists, return its latest state
+    mgr = AgentStateManager()
+    existing_state = await mgr.get_by_task_id(body.task_id)
+    if existing_state:
+        logger.info("Idempotency hit: returning existing state", task_id=body.task_id)
+        return RunTaskResponse(
+            agent_state_id=existing_state.agent_state_id,
+            task_id=existing_state.task_id,
+            status=existing_state.status,
+            budget_used=existing_state.budget_used,
+            current_step=existing_state.current_step,
+        )
+
     spec = TaskSpec(
         task_id=body.task_id,
         provider_id=body.provider_id,
